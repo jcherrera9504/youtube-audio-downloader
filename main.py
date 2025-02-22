@@ -2,6 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 import os
 import subprocess
 import time
+import shutil
 
 app = Flask(__name__)
 
@@ -21,11 +22,19 @@ def download():
     try:
         # Limpiar la carpeta `downloads` antes de descargar
         clean_downloads_folder()
-        time.sleep(2)
+        time.sleep(2)  # Retraso de 2 segundos
+
+        # Copiar el archivo `cookies.txt` a una ubicación escribible
+        secret_cookies_path = "/etc/secrets/cookies.txt"
+        writable_cookies_path = os.path.join(os.getcwd(), "cookies.txt")
+        if os.path.exists(secret_cookies_path):
+            shutil.copy(secret_cookies_path, writable_cookies_path)
+        else:
+            return jsonify({"error": "Archivo cookies.txt no encontrado"}), 500
 
         # Comando para descargar el audio usando yt-dlp
         output_path = os.path.join(DOWNLOADS_FOLDER, "%(title)s.%(ext)s")
-        command = f"yt-dlp --geo-bypass -x --audio-format mp3 --ffmpeg-location /usr/bin --cookies /etc/secrets/cookies.txt -o '{output_path}' {url}"
+        command = f"yt-dlp --geo-bypass -x --audio-format mp3 --ffmpeg-location /usr/bin --cookies {writable_cookies_path} -o '{output_path}' {url}"
         print(f"Ejecutando comando: {command}")  # Mensaje de depuración
 
         # Ejecutar el comando
