@@ -25,7 +25,7 @@ def download():
 
         # Comando para descargar el audio usando yt-dlp
         output_path = os.path.join(DOWNLOADS_FOLDER, "%(title)s.%(ext)s")
-        command = f"yt-dlp --geo-bypass -x --audio-format mp3 -o '{output_path}' {url}"
+        command = f"yt-dlp --geo-bypass -x --audio-format mp3 --ffmpeg-location ~/bin/ffmpeg --proxy socks5://47.91.88.100:1080 -o '{output_path}' {url}"
         print(f"Ejecutando comando: {command}")  # Mensaje de depuración
 
         # Ejecutar el comando
